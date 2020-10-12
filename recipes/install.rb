@@ -15,31 +15,27 @@ user node['consul']['user'] do
     not_if { node['install']['external_users'].casecmp("true") == 0 }
 end
 
+group node["kagent"]["certs_group"] do
+    action :manage
+    append true
+    excluded_members node['consul']['user']
+    not_if { node['install']['external_users'].casecmp("true") == 0 }
+    only_if { conda_helpers.is_upgrade }
+end
+
 hops_group = "hadoop"
 if node.attribute?("hops") && node['hops'].attribute?("group")
     hops_group = node['hops']['group']
 end
 
 group hops_group do
+    gid node['hops']['group_id']
     action :create
     not_if "getent group #{hops_group}"
     not_if { node['install']['external_users'].casecmp("true") == 0 }
 end
 
 group hops_group do
-    action :modify
-    members ["#{node['consul']['user']}"]
-    append true
-    not_if { node['install']['external_users'].casecmp("true") == 0 }
-end
-
-group node['kagent']['certs_group'] do
-    action :create
-    not_if "getent group #{node['kagent']['certs_group']}"
-    not_if { node['install']['external_users'].casecmp("true") == 0 }
-end
-
-group node['kagent']['certs_group'] do
     action :modify
     members ["#{node['consul']['user']}"]
     append true
