@@ -153,11 +153,10 @@ if node['consul']['use_dnsmasq'].casecmp?("true")
                 group 'root'
                 code <<-EOH
                     set -e
-                    cp /etc/resolv.conf /etc/resolv.conf.bak
-                    rm -f /etc/resolv.conf
-                    echo "nameserver #{my_ip}" > /etc/resolv.conf
-                    chmod 644 /etc/resolv.conf
-                    chattr +i /etc/resolv.conf
+                    cp #{effective_resolv_conf} #{effective_resolv_conf}.bak
+                    chattr -i #{effective_resolv_conf}
+                    sed -i 's;^nameserver[[:space:]].*$;nameserver #{my_ip};g' #{effective_resolv_conf}
+                    chattr +i #{effective_resolv_conf}
                 EOH
                 action :nothing
             end
@@ -206,4 +205,11 @@ template node['consul']['health-check']['retryable-check-file'] do
     owner node['consul']['user']
     group node['consul']['group']
     mode 0755
+end
+
+cookbook_file "#{node['consul']['bin_dir']}/domain_utils.sh" do
+    source "domain_utils.sh"
+    owner node['consul']['user']
+    group node['consul']['group']
+    mode '0755'
 end

@@ -6,7 +6,7 @@ description 'Installs/Configures HashiCorp Consul'
 long_description 'Installs/Configures HashiCorp Consul for Hopsworks'
 source_url 'https://github.com/logicalclocks/consul-chef'
 issues_url 'https://github.com/logicalclocks/consul-chef/issues'
-version '2.3.0'
+version '2.5.0'
 chef_version '>= 12.1' if respond_to?(:chef_version)
 
 depends 'conda'
@@ -16,8 +16,16 @@ attribute "consul/user",
           :description => "System user to run the service",
           :type => 'string'
 
+attribute "consul/user_id",
+          :description => "Consul user ID. Default: 1500",
+          :type => 'string'
+
 attribute "consul/group",
           :description => "Group id of consul user",
+          :type => 'string'
+
+attribute "consul/group_id",
+          :description => "Consul group id. Default: 1500",
           :type => 'string'
 
 attribute "consul/bin_url",
@@ -52,6 +60,10 @@ attribute "consul/bind_address",
           :description => "IP address Consul agent will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information.",
           :type => 'string'
 
+attribute "consul/client_address",
+          :description => "IP address Consul client facing intefaces will bind to. You can also set a go-sockaddr template. Check https://www.consul.io/docs/agent/options.html#_bind for more information. Default: localhost",
+          :type => 'string'
+
 attribute "consul/retry_join/provider",
           :description => "Cloud provider for Cloud Auto-join, defaults to install/cloud",
           :type => 'string'
@@ -67,6 +79,10 @@ attribute "consul/retry_join/tag_value",
 attribute "consul/master/ui",
           :description => "Flag to enable/disable the web UI",
           :type => 'string'
+
+attribute "consul/master/private_ips",
+          :description => "Set ip addresses",
+          :type => "array"
 
 attribute "consul/health-check/max-attempts",
           :description => "Maximum number of attempts to retry the health check script before giving up",
